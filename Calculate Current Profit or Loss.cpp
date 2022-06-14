@@ -13,13 +13,13 @@ int main(){
     int profit; //the profit or loss.
     
     //Prompting
-    cout<<"What is the selling price of a bottle: "
+    cout<<"What is the selling price of a bottle: ";
     cin>>sellingPrice;
 
-    cout<<"What is the number of bottles sold (0-40): "
+    cout<<"What is the number of bottles sold (0-40): ";
     cin>>numSold;
 
-    cout<<"How many number of days in storage: "
+    cout<<"How many number of days in storage: "; 
     cin>>days;
 
     //Calculation
