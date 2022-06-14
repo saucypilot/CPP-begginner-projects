@@ -12,4 +12,21 @@ int main(){
     int days; //number of days in storage
     int profit; //the profit or loss.
     
+    //Prompting
+    cout<<"What is the selling price of a bottle: "
+    cin>>sellingPrice;
+
+    cout<<"What is the number of bottles sold (0-40): "
+    cin>>numSold;
+
+    cout<<"How many number of days in storage: "
+    cin>>days;
+
+    //Calculation
+    sellingPrice = numSold * sellingPrice - (days * 15) - 2000;
+
+    //Output
+    cout<<"The price of a current bottle is "<<sellingPrice<<endl;
+    cout<<"The number of bottles sold is "<<numSold<<endl;
+    cout<<"The current profit or loss is calculated to be "<<sellingPrice;
 }
