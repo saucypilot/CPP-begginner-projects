@@ -23,10 +23,10 @@ int main(){
     cin>>days;
 
     //Calculation
-    sellingPrice = numSold * sellingPrice - (days * 15) - 2000;
+    profit= numSold * sellingPrice - (days * 15) - 2000;
 
     //Output
     cout<<"The price of a current bottle is "<<sellingPrice<<endl;
     cout<<"The number of bottles sold is "<<numSold<<endl;
-    cout<<"The current profit or loss is calculated to be "<<sellingPrice;
+    cout<<"The current profit or loss is calculated to be "<<profit;
 }
