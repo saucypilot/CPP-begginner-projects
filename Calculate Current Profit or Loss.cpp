@@ -11,6 +11,9 @@ int main(){
     float sellingPrice; //selling price of the bottles
     int days; //number of days in storage
     int profit; //the profit or loss.
+
+    const int fee = 15;
+    const int caseCost = 2000;
     
     //Prompting
     cout<<"What is the selling price of a bottle: ";
@@ -23,7 +26,7 @@ int main(){
     cin>>days;
 
     //Calculation
-    profit= numSold * sellingPrice - (days * 15) - 2000;
+    profit= numSold * sellingPrice - (days * fee) - caseCost;
 
     //Output
     cout<<"The price of a current bottle is "<<sellingPrice<<endl;
