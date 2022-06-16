@@ -1,8 +1,3 @@
-// Irian Durian
-// Tarrant County College - COSC 1436
-// Professor Keith Smelser
-// Average Temps
-
 // Assignment:
 // Use the cout Stream Manipulators to produce the expect results for the numeric data
 #include <iostream>
