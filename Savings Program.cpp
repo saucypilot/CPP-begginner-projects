@@ -1,3 +1,5 @@
+//This program show a savings account balance.
+
 #include <iostream>
 using namespace std;
 
