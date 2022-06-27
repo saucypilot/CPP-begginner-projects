@@ -10,9 +10,9 @@ int main(){
     int balance = 0;
 
 ///prompting the user
-    cout << "Enter amount to save each month:";
+    cout << "Enter amount to save each month: ";
     cin >> amount;
-    cout << "Enter the number of months to save:";
+    cout << "Enter the number of months to save: ";
     cin >> numOFmonths;
     cout << endl;
 
