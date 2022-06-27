@@ -6,7 +6,7 @@ using namespace std;
 int main(){
     int amount;
     int numOFmonths;
-    int currentMonths = 0;
+    int currentMonths = `;
     int balance = 0;
 
 ///prompting the user
@@ -19,9 +19,8 @@ int main(){
 //Outputting
     do
     {   balance += amount;
-        currentMonths += 1;
-        cout << "For month " << currentMonths << ", the balance is " << balance << endl;
-    } while (currentMonths < numOFmonths);
+        cout << "For month " << currentMonths++ << ", the balance is " << balance << endl;
+    } while (currentMonths <= numOFmonths);
     
     cout << endl << "End of Program";
 
