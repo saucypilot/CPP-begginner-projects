@@ -10,7 +10,7 @@ int main()
     double nums;
 
     inputFile.open("Week10a.dat",ios::in);
-    double sum;
+    double sum = 0;
 
     while (inputFile>>nums) 
     {   
