@@ -11,29 +11,29 @@ int main()
     
     outputFile.open(FILE_NAME, ios::out);
 
-    cout << "What is your full name? ";
+    FILE_NAME << "What is your full name? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
-    cout << "What is the street you're in? ";
+    FILE_NAME << "What is the street you're in? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
-    cout << "What is the second street you're in? ";
+    FILE_NAME << "What is the second street you're in? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
-    cout << "What city are you in? ";
+    FILE_NAME << "What city are you in? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
-    cout << "What state are you in? ";
+    FILE_NAME << "What state are you in? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
-    cout << "What is your zip code? ";
+    FILE_NAME << "What is your zip code? ";
     cin >> myData;
-    cout << endl;
+    FILE_NAME << endl;
 
     outputFile.close();
     return 0;
