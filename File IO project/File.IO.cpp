@@ -4,36 +4,36 @@ using namespace std;
 
 int main()
 {
-    const string FILE_NAME = "StudentData.txt";
+    const string outputFile = "StudentData.txt";
     string myData;
 
     ofstream outputFile;
     
-    outputFile.open(FILE_NAME, ios::out);
+    outputFile.open(outputFile, ios::out);
 
-    FILE_NAME << "What is your full name? ";
+    outputFile << "What is your full name? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
-    FILE_NAME << "What is the street you're in? ";
+    outputFile << "What is the street you're in? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
-    FILE_NAME << "What is the second street you're in? ";
+    outputFile << "What is the second street you're in? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
-    FILE_NAME << "What city are you in? ";
+    outputFile << "What city are you in? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
-    FILE_NAME << "What state are you in? ";
+    outputFile << "What state are you in? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
-    FILE_NAME << "What is your zip code? ";
+    outputFile << "What is your zip code? ";
     cin >> myData;
-    FILE_NAME << endl;
+    outputFile << endl;
 
     outputFile.close();
     return 0;
