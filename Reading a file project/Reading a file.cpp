@@ -1,14 +1,22 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 int main()
 {
+    double nums, sum;
     ifstream inputFile;
-    const string num1, num2 ,num3, num4, num5;
 
-    inputFile.open("Week10a.dat")
+    inputFile.open("Week10a.dat", ios::in);
+    while (inputFile >> nums)
+    {
+        sum = sum + nums;
+    }
+    inputFile.close();
+    cout<<sum;
+    cout<<setprecision(2)<<fixed<<"The current balance is "<<sum<<".";
 
-    
+	return 0;
 }
