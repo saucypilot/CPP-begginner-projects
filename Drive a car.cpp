@@ -23,6 +23,5 @@ int main(){
     Buckle();
     GC();
 
-//string s="Rolls Royce";
-    parked("Rolls Royce");
+    parked("Infiniti");
 return 0;}
