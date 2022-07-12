@@ -1,40 +1,43 @@
-#include <iostream>
-#include <fstream>
+#include<iostream>
+#include<string>
+#include<fstream>
 using namespace std;
 
+const string FILE_NAME="StudentData.txt";
 int main()
 {
-    const string outputFile = "StudentData.txt";
+
     string myData;
-
     ofstream outputFile;
-    
-    outputFile.open(outputFile, ios::out);
+    outputFile.open(FILE_NAME);
 
-    outputFile << "What is your full name? ";
-    cin >> myData;
-    outputFile << endl;
-
-    outputFile << "What is the street you're in? ";
-    cin >> myData;
-    outputFile << endl;
-
-    outputFile << "What is the second street you're in? ";
-    cin >> myData;
-    outputFile << endl;
-
-    outputFile << "What city are you in? ";
-    cin >> myData;
-    outputFile << endl;
-
-    outputFile << "What state are you in? ";
-    cin >> myData;
-    outputFile << endl;
-
-    outputFile << "What is your zip code? ";
-    cin >> myData;
-    outputFile << endl;
-
+    cout<<"Enter Full Name :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
+    cout<<"Enter Street 1 :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
+    cout<<"Enter Street 2 :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
+    cout<<"Enter City :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
+    cout<<"Enter State Code :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
+    cout<<"Enter Zip Code :";
+    getline(cin,myData);
+    outputFile<<myData<<endl;
     outputFile.close();
+
+    cout<<endl<<endl;
+    ifstream readFile;
+    readFile.open(FILE_NAME);
+    while(getline(readFile, myData))
+    {
+        cout << myData << endl;
+    }
+    readFile.close();
     return 0;
 }
