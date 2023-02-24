@@ -72,6 +72,8 @@ void traverseLot(vector<vector<char>>& grid, vector<vector<Lot>>& lots, int row,
     }
 }
 
+void determineLotSize(char grid[][MAX_COL], int row, int col, int &lotSize, int startRow, int startCol);
+
 // Function to process a single survey
 void processSurvey(int n, ifstream &infile)
 {
