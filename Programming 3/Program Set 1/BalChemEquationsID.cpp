@@ -1,135 +1,205 @@
 #include <iostream>
 #include <fstream>
-#include <string>
+#include <map>
 #include <vector>
 #include <algorithm>
-#include <map>
 #include <sstream>
-#include <iomanip>
+
 using namespace std;
+
+map<string, vector<pair<string, int>>> parseCompounds(string compounds)
+{
+    map<string, vector<pair<string, int>>> compoundMap;
+    int i = 0;
+    int j = 0;
+    int len = compounds.length();
+    string currentElement = "";
+    string currentCompound = "";
+    int currentCompoundCoeff = 1;
+    while (i < len)
+    {
+        if (compounds[i] == '+')
+        {
+            compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+            currentElement = "";
+            currentCompoundCoeff = 1;
+            i++;
+            continue;
+        }
+        else if (compounds[i] == '=')
+        {
+            compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+            currentElement = "";
+            currentCompoundCoeff = 1;
+            currentCompound = "";
+            i++;
+            continue;
+        }
+        else if (compounds[i] == '(')
+        {
+            if (currentElement != "")
+            {
+                compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+            }
+            currentElement = "";
+            i++;
+            int k = i;
+            int openParens = 1;
+            while (openParens > 0)
+            {
+                if (compounds[k] == '(')
+                {
+                    openParens++;
+                }
+                else if (compounds[k] == ')')
+                {
+                    openParens--;
+                }
+                k++;
+            }
+            map<string, vector<pair<string, int>>> subCompoundMap = parseCompounds(compounds.substr(i, k - i - 1));
+            i = k;
+            if (k < len && isdigit(compounds[k]))
+            {
+                currentCompoundCoeff = compounds[k] - '0';
+                k++;
+                while (k < len && isdigit(compounds[k]))
+                {
+                    currentCompoundCoeff = currentCompoundCoeff * 10 + (compounds[k] - '0');
+                    k++;
+                }
+                i = k;
+            }
+            for (auto subCompound : subCompoundMap)
+            {
+                string subCompoundName = subCompound.first;
+                for (auto element : subCompound.second)
+                {
+                    compoundMap[currentCompound].push_back(make_pair(element.first, element.second * currentCompoundCoeff));
+                }
+            }
+            continue;
+        }
+        else if (compounds[i] == ')')
+        {
+            if (currentElement != "")
+            {
+                compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+            }
+            break;
+        }
+        else if (isupper(compounds[i]))
+        {
+            if (currentElement != "")
+            {
+                compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+            }
+            currentElement = compounds.substr(i, 1);
+            i++;
+            if (i < len && islower(compounds[i]))
+            {
+                currentElement += compounds.substr(i, 1);
+                i++;
+            }
+            if (i < len && isdigit(compounds[i]))
+            {
+                currentCompoundCoeff = compounds[i] - '0';
+                i++;
+                while (i < len && isdigit(compounds[i]))
+                {
+                    currentCompoundCoeff = currentCompoundCoeff * 10 + (compounds[i] - '0');
+                    i++;
+                }
+            }
+        }
+        else if (isdigit(compounds[i]))
+        {
+            currentCompoundCoeff = compounds[i] - '0';
+            i++;
+            while (i < len && isdigit(compounds[i]))
+            {
+                currentCompoundCoeff = currentCompoundCoeff * 10 + (compounds[i] - '0');
+                i++;
+            }
+        }
+    }
+    if (currentElement != "")
+    {
+        compoundMap[currentCompound].push_back(make_pair(currentElement, currentCompoundCoeff));
+    }
+    return compoundMap;
+}
 
 int main()
 {
     string fileName;
     cout << "Enter the file name: ";
     cin >> fileName;
-    ifstream inFile;
-    inFile.open(fileName);
-    if (!inFile)
+    ifstream file(fileName);
+    int numEquations;
+    file >> numEquations;
+    file.ignore();
+    for (int i = 0; i < numEquations; i++)
     {
-        cout << "Unable to open file";
-        exit(1); // terminate with error
-    }
-    int n;
-    inFile >> n;
-    inFile.ignore();
-    for (int i = 0; i < n; i++)
-    {
-        string line;
-        getline(inFile, line);
-        int pos = line.find("=");
-        string left = line.substr(0, pos);
-        string right = line.substr(pos + 1);
-        map<string, int> m;
-        istringstream iss(left);
-        string s;
-        while (getline(iss, s, '+'))
+        string equation;
+        getline(file, equation);
+        map<string, vector<pair<string, int>>> compoundMap = parseCompounds(equation);
+        map<string, int> elementMap;
+        for (auto compound : compoundMap)
         {
-            int pos = s.find("(");
-            if (pos != string::npos)
+            for (auto element : compound.second)
             {
-                int pos2 = s.find(")");
-                string s2 = s.substr(pos + 1, pos2 - pos - 1);
-                int num = stoi(s.substr(pos2 + 1));
-                istringstream iss2(s2);
-                string s3;
-                while (getline(iss2, s3, '+'))
-                {
-                    int pos3 = s3.find_first_of("0123456789");
-                    if (pos3 != string::npos)
-                    {
-                        int num2 = stoi(s3.substr(pos3));
-                        string s4 = s3.substr(0, pos3);
-                        m[s4] += num * num2;
-                    }
-                    else
-                    {
-                        m[s3] += num;
-                    }
-                }
-            }
-            else
-            {
-                int pos2 = s.find_first_of("0123456789");
-                if (pos2 != string::npos)
-                {
-                    int num2 = stoi(s.substr(pos2));
-                    string s4 = s.substr(0, pos2);
-                    m[s4] += num2;
-                }
-                else
-                {
-                    m[s] += 1;
-                }
+                elementMap[element.first] += element.second;
             }
         }
-        istringstream iss2(right);
-        while (getline(iss2, s, '+'))
+        int gcd = 1;
+        for (auto element : elementMap)
         {
-            int pos = s.find("(");
-            if (pos != string::npos)
-            {
-                int pos2 = s.find(")");
-                string s2 = s.substr(pos + 1, pos2 - pos - 1);
-                int num = stoi(s.substr(pos2 + 1));
-                istringstream iss2(s2);
-                string s3;
-                while (getline(iss2, s3, '+'))
-                {
-                    int pos3 = s3.find_first_of("0123456789");
-                    if (pos3 != string::npos)
-                    {
-                        int num2 = stoi(s3.substr(pos3));
-                        string s4 = s3.substr(0, pos3);
-                        m[s4] -= num * num2;
-                    }
-                    else
-                    {
-                        m[s3] -= num;
-                    }
-                }
-            }
-            else
-            {
-                int pos2 = s.find_first_of("0123456789");
-                if (pos2 != string::npos)
-                {
-                    int num2 = stoi(s.substr(pos2));
-                    string s4 = s.substr(0, pos2);
-                    m[s4] -= num2;
-                }
-                else
-                {
-                    m[s] -= 1;
-                }
-            }
+            gcd = __gcd(gcd, element.second);
         }
-        bool flag = true;
-        for (auto it = m.begin(); it != m.end(); it++)
+        if (gcd == 0)
         {
-            if (it->second != 0)
-            {
-                flag = false;
-                break;
-            }
-        }
-        if (flag)
-        {
-            cout << "Equation #" << i + 1 << ": " << line << endl;
+            cout << "E" << i + 1 << ": Cannot Balance" << endl;
         }
         else
         {
-            cout << "Equation #" << i + 1 << ": Cannot Balance" << endl;
+            cout << "E" << i + 1 << ": ";
+            int j = 0;
+            for (auto compound : compoundMap)
+            {
+                if (j > 0)
+                {
+                    cout << " + ";
+                }
+                if (compound.first == "")
+                {
+                    cout << " = ";
+                }
+                else
+                {
+                    if (compound.second[0].second > 1)
+                    {
+                        cout << compound.second[0].second / gcd << compound.first;
+                    }
+                    else
+                    {
+                        cout << compound.first;
+                    }
+                    for (int k = 1; k < compound.second.size(); k++)
+                    {
+                        if (compound.second[k].second > 1)
+                        {
+                            cout << compound.second[k].second / gcd << compound.second[k].first;
+                        }
+                        else
+                        {
+                            cout << compound.second[k].first;
+                        }
+                    }
+                }
+                j++;
+            }
+            cout << endl;
         }
     }
     return 0;
