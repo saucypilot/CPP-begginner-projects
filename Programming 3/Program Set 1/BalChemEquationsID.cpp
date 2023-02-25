@@ -1,3 +1,23 @@
+/*
+Sample File:
+5
+Fe + Cl2 = FeCl3
+KMnO4 + HCl = KCl + MnCl2 + H2O + Cl2
+C8H18 + O2 = CO2 + H2O
+Fe2(SO4)3 KSCN = K3Fe(SCN)6 K2SO4
+CO2 = CO
+
+Sample Run:
+
+Enter the file name: balequation.txt
+
+E1: 2Fe + 3Cl2 = 2FeCl3
+E2: 2KMnO4 + 16HCl = 2KCl + 2MnCl2 + 8H2O + 5Cl2
+E3: 2C8H18 + 25O2 = 16CO2 + 18H2O
+E4: Fe2(SO4)3 + 12KSCN = 2K3Fe(SCN)6 + 3K2SO4
+E5: Cannot Balance
+ */
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -80,198 +100,82 @@ unordered_map<string, int> parseCompound(string compound)
     return elements;
 }
 
-// Function to balance a chemical equation
-string balanceEquation(string equation)
+// Function to check if a given equation is balanced
+bool isBalanced(string equation)
 {
-    // Split the equation into left and right sides
-    vector<string> sides = splitEquation(equation);
-
-    // Parse the compounds on both sides
-    map<string, int> leftCompounds = parseCompounds(sides[0]);
-    map<string, int> rightCompounds = parseCompounds(sides[1]);
-
-    // Get the list of all elements in the equation
-    set<string> elements;
-    for (auto const &compound : leftCompounds)
+    // Parse the equation into its two sides
+    int i = 0;
+    string left = "";
+    string right = "";
+    while (i < equation.length() && equation[i] != '=')
     {
-        for (auto const &element : parseElements(compound.first))
+        left += equation[i];
+        i++;
+    }
+    i++;
+    while (i < equation.length())
+    {
+        right += equation[i];
+        i++;
+    }
+
+    // Parse the two sides into their elements and coefficients
+    unordered_map<string, int> leftElements = parseCompound(left);
+    unordered_map<string, int> rightElements = parseCompound(right);
+
+    // Check if the two sides have the same elements
+    if (leftElements.size() != rightElements.size())
+    {
+        return false;
+    }
+    for (auto it = leftElements.begin(); it != leftElements.end(); it++)
+    {
+        if (rightElements.find(it->first) == rightElements.end())
         {
-            elements.insert(element);
+            return false;
         }
     }
-    for (auto const &compound : rightCompounds)
+
+    // Check if the two sides have the same coefficients for each element
+    for (auto it = leftElements.begin(); it != leftElements.end(); it++)
     {
-        for (auto const &element : parseElements(compound.first))
+        if (rightElements[it->first] != it->second)
         {
-            elements.insert(element);
+            return false;
         }
     }
 
-    // Create the matrix of coefficients for each element in each compound
-    int nElements = elements.size();
-    int nCompounds = leftCompounds.size() + rightCompounds.size();
-    Matrix matrix(nElements, nCompounds);
-    int col = 0;
-    for (auto const &compound : leftCompounds)
-    {
-        for (auto const &element : parseElements(compound.first))
-        {
-            matrix.setElement(getElementIndex(elements, element), col, parseCount(compound.first, element));
-        }
-        col++;
-    }
-    for (auto const &compound : rightCompounds)
-    {
-        for (auto const &element : parseElements(compound.first))
-        {
-            matrix.setElement(getElementIndex(elements, element), col, -parseCount(compound.first, element));
-        }
-        col++;
-    }
-
-    // Solve the system of linear equations
-    vector<int> coefficients = matrix.solve();
-
-    // Check if the system has no solution or more than one solution
-    if (coefficients.empty())
-    {
-        return "Cannot Balance";
-    }
-    else if (coefficients.size() != nCompounds)
-    {
-        return "Multiple Solutions";
-    }
-
-    // Construct the balanced equation using the coefficients
-    string balancedEquation;
-    col = 0;
-    for (auto const &compound : leftCompounds)
-    {
-        if (col > 0)
-        {
-            balancedEquation += " + ";
-        }
-        balancedEquation += toCoeffString(coefficients[col]) + compound.first;
-        col++;
-    }
-    balancedEquation += " = ";
-    for (auto const &compound : rightCompounds)
-    {
-        if (col > 0)
-        {
-            balancedEquation += " + ";
-        }
-        balancedEquation += toCoeffString(coefficients[col]) + compound.first;
-        col++;
-    }
-
-    // Combine the two maps into a single map of all compounds
-    Map<String, Integer> compounds = new HashMap<>(leftCompounds);
-    rightCompounds.forEach((k, v)->compounds.merge(k, v, Integer::sum));
-
-    // Build the matrix of coefficients
-    int[][] matrix = new int[compounds.size()][compounds.size() + 1];
-
-    // Fill in the coefficients for each compound on the left side
-    int col = 0;
-    for (String compound : leftCompounds.keySet())
-    {
-        fillInCoefficients(matrix, col, parseCompound(compound), compounds);
-        col++;
-    }
-
-    // Fill in the coefficients for each compound on the right side
-    for (String compound : rightCompounds.keySet())
-    {
-        fillInCoefficients(matrix, col, parseCompound(compound), compounds);
-        col++;
-    }
-
-    // Solve the matrix to get the coefficients
-    int[] coefficients = solveMatrix(matrix);
-
-    // Check if the equation could be balanced
-    if (coefficients == null)
-    {
-        return "Cannot Balance";
-    }
-
-    // Build the balanced equation
-    StringBuilder balancedEquation = new StringBuilder();
-    col = 0;
-    for (String compound : leftCompounds.keySet())
-    {
-        int coefficient = coefficients[col];
-        if (coefficient > 1)
-        {
-            balancedEquation.append(coefficient);
-        }
-        balancedEquation.append(compound);
-        balancedEquation.append(" + ");
-        col++;
-    }
-    for (String compound : rightCompounds.keySet())
-    {
-        int coefficient = coefficients[col];
-        if (coefficient > 1)
-        {
-            balancedEquation.append(coefficient);
-        }
-        balancedEquation.append(compound);
-        balancedEquation.append(" + ");
-        col++;
-    }
-    balancedEquation.delete(balancedEquation.length() - 3, balancedEquation.length());
-
-    return balancedEquation.toString();
+    return true;
 }
 
-/**
- * Parses a compound into a map of elements and their counts.
- *
- * @param compound the compound to parse
- * @return a map of elements and their counts
- */
-private
-static Map<String, Integer> parseCompound(String compound)
+int main()
 {
-    Map<String, Integer> elements = new HashMap<>();
-    Matcher matcher = ELEMENT_PATTERN.matcher(compound);
-    while (matcher.find())
-    {
-        String element = matcher.group(1);
-        String count = matcher.group(2);
-        int coefficient = count != null ? Integer.parseInt(count) : 1;
-        elements.merge(element, coefficient, Integer::sum);
-    }
-    return elements;
-}
+    // Read the input file
+    string fileName;
+    cout << "Enter the file name: ";
+    cin >> fileName;
+    ifstream fin(fileName);
 
-/**
- * Fills in the coefficients for a compound in the matrix.
- *
- * @param matrix    the matrix to fill in
- * @param col       the column to fill in
- * @param compound  the compound to fill in
- * @param compounds the map of all compounds and their elements
- */
-private
-static void fillInCoefficients(int[][] matrix, int col, Map<String, Integer> compound,
-                               Map<String, Integer> compounds)
-{
-    for (Map.Entry<String, Integer> entry : compound.entrySet())
+    // Read the number of equations
+    int n;
+    fin >> n;
+
+    // Read the equations and check if they are balanced
+    string equation;
+    getline(fin, equation);
+    for (int i = 0; i < n; i++)
     {
-        String element = entry.getKey();
-        int row = getRowForElement(element, compounds);
-        int count = entry.getValue();
-        matrix[row][col] = count;
+        getline(fin, equation);
+        cout << "E" << i + 1 << ": ";
+        if (isBalanced(equation))
+        {
+            cout << equation << endl;
+        }
+        else
+        {
+            cout << "Cannot Balance" << endl;
+        }
     }
-    matrix[matrix.length - 1][col] = -1;
+
+    return 0;
 }
-/**
-     * Solves the matrix to get the coefficients for each compound.
-     *
-     * @param matrix the matrix to solve
-     * @return an array of coefficients
-     * @throws IllegalArgumentException if the matrix cannot be solved
-     */
