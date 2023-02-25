@@ -11,6 +11,7 @@ int main()
     string fileName;
     cout << "Enter the file name: ";
     cin >> fileName;
+    cout << endl;
     ifstream inFile;
     inFile.open(fileName);
     if (!inFile)
