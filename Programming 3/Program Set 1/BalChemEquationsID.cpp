@@ -1,23 +1,3 @@
-/*
-Sample File:
-5
-Fe + Cl2 = FeCl3
-KMnO4 + HCl = KCl + MnCl2 + H2O + Cl2
-C8H18 + O2 = CO2 + H2O
-Fe2(SO4)3 KSCN = K3Fe(SCN)6 K2SO4
-CO2 = CO
-
-Sample Run:
-
-Enter the file name: balequation.txt
-
-E1: 2Fe + 3Cl2 = 2FeCl3
-E2: 2KMnO4 + 16HCl = 2KCl + 2MnCl2 + 8H2O + 5Cl2
-E3: 2C8H18 + 25O2 = 16CO2 + 18H2O
-E4: Fe2(SO4)3 + 12KSCN = 2K3Fe(SCN)6 + 3K2SO4
-E5: Cannot Balance
- */
-
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -103,43 +83,67 @@ unordered_map<string, int> parseCompound(string compound)
 // Function to check if a given equation is balanced
 bool isBalanced(string equation)
 {
-    // Parse the equation into its two sides
-    int i = 0;
-    string left = "";
-    string right = "";
-    while (i < equation.length() && equation[i] != '=')
-    {
-        left += equation[i];
-        i++;
-    }
-    i++;
-    while (i < equation.length())
-    {
-        right += equation[i];
-        i++;
-    }
+    // Split the equation into left and right sides
+    int equalSign = equation.find('=');
+    string left = equation.substr(0, equalSign);
+    string right = equation.substr(equalSign + 1);
 
-    // Parse the two sides into their elements and coefficients
-    unordered_map<string, int> leftElements = parseCompound(left);
-    unordered_map<string, int> rightElements = parseCompound(right);
+    // Parse the left and right sides into their elements and coefficients
+    vector<unordered_map<string, int>> leftElements;
+    vector<unordered_map<string, int>> rightElements;
+    string compound = "";
+    for (int i = 0; i < left.length(); i++)
+    {
+        if (left[i] == '+')
+        {
+            leftElements.push_back(parseCompound(compound));
+            compound = "";
+        }
+        else
+        {
+            compound += left[i];
+        }
+    }
+    leftElements.push_back(parseCompound(compound));
+    compound = "";
+    for (int i = 0; i < right.length(); i++)
+    {
+        if (right[i] == '+')
+        {
+            rightElements.push_back(parseCompound(compound));
+            compound = "";
+        }
+        else
+        {
+            compound += right[i];
+        }
+    }
+    rightElements.push_back(parseCompound(compound));
 
-    // Check if the two sides have the same elements
-    if (leftElements.size() != rightElements.size())
+    // Check if the equation is balanced
+    unordered_map<string, int> leftMap;
+    unordered_map<string, int> rightMap;
+    for (int i = 0; i < leftElements.size(); i++)
+    {
+        for (auto it = leftElements[i].begin(); it != leftElements[i].end(); it++)
+        {
+            leftMap[it->first] += it->second;
+        }
+    }
+    for (int i = 0; i < rightElements.size(); i++)
+    {
+        for (auto it = rightElements[i].begin(); it != rightElements[i].end(); it++)
+        {
+            rightMap[it->first] += it->second;
+        }
+    }
+    if (leftMap.size() != rightMap.size())
     {
         return false;
     }
-    for (auto it = leftElements.begin(); it != leftElements.end(); it++)
+    for (auto it = leftMap.begin(); it != leftMap.end(); it++)
     {
-        if (rightElements.find(it->first) == rightElements.end())
-        {
-            return false;
-        }
-    }
-
-    // Check if the two sides have the same coefficients for each element
-    for (auto it = leftElements.begin(); it != leftElements.end(); it++)
-    {
-        if (rightElements[it->first] != it->second)
+        if (rightMap.find(it->first) == rightMap.end() || rightMap[it->first] != it->second)
         {
             return false;
         }
@@ -150,22 +154,29 @@ bool isBalanced(string equation)
 
 int main()
 {
-    // Read the input file
+    // Get the file name from the user
     string fileName;
     cout << "Enter the file name: ";
     cin >> fileName;
-    ifstream fin(fileName);
+
+    // Open the file
+    ifstream file(fileName);
+    if (!file.is_open())
+    {
+        cout << "Cannot open file " << fileName << endl;
+        return 1;
+    }
 
     // Read the number of equations
-    int n;
-    fin >> n;
+    int numEquations;
+    file >> numEquations;
 
-    // Read the equations and check if they are balanced
+    // Read each equation and check if it is balanced
     string equation;
-    getline(fin, equation);
-    for (int i = 0; i < n; i++)
+    getline(file, equation);
+    for (int i = 0; i < numEquations; i++)
     {
-        getline(fin, equation);
+        getline(file, equation);
         cout << "E" << i + 1 << ": ";
         if (isBalanced(equation))
         {
@@ -177,5 +188,6 @@ int main()
         }
     }
 
+    file.close();
     return 0;
 }
