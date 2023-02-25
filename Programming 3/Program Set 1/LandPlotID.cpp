@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <vector>
 #include <algorithm>
 
@@ -19,45 +18,34 @@ int main()
         cout << "Unable to open file";
         exit(1); // terminate with error
     }
-    int n;
-    inFile >> n;
+    int numSurveys;
+    inFile >> numSurveys;
     inFile.ignore();
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < numSurveys; i++)
     {
-        vector<int> v;
-        string line;
-        for (int j = 0; j < 8; j++)
+        vector<int> plotCounts;
+        for (int row = 0; row < 8; row++)
         {
-            getline(inFile, line);
-            int count = 0;
-            for (int k = 0; k < 16; k++)
+            int unclaimedPlotsInRow = 0;
+            for (int col = 0; col < 16; col++)
             {
-                if (line[k] == '*')
+                char c = inFile.get();
+                if (c == '*')
                 {
-                    count++;
-                }
-                else
-                {
-                    if (count > 0)
-                    {
-                        v.push_back(count);
-                        count = 0;
-                    }
+                    unclaimedPlotsInRow++;
                 }
             }
-            if (count > 0)
-            {
-                v.push_back(count);
-            }
+            inFile.ignore(); // ignore newline character
+            plotCounts.push_back(unclaimedPlotsInRow);
         }
-        sort(v.begin(), v.end(), greater<int>());
+        sort(plotCounts.rbegin(), plotCounts.rend());
         cout << "Survey " << i + 1 << ": ";
-        for (int j = 0; j < v.size(); j++)
+        for (int j = 0; j < plotCounts.size(); j++)
         {
-            cout << v[j] * 5 << " ";
+            cout << plotCounts[j] * 5 << " ";
         }
         cout << endl;
-        getline(inFile, line);
+        inFile.ignore(); // ignore blank line
     }
     inFile.close();
     return 0;
