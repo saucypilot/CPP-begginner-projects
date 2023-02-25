@@ -16,7 +16,7 @@ int main()
     if (!inFile)
     {
         cout << "Unable to open file";
-        exit(1); // terminate with error
+        exit(1);
     }
     int numSurveys;
     inFile >> numSurveys;
