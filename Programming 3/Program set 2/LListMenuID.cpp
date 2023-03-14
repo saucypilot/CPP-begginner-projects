@@ -4,19 +4,27 @@
 
 using namespace std;
 
-//implement a linked list
+//implement the linked list stuct
 struct Node
 {
-    string data;
+    int key;
     Node *next;
+
+    Node(int k) : key(k), next(nullptr) {}
 };
 
-//function prototypes
-void addNode(Node *&, string);
-void deleteNode(Node *&, string);
-void displayList(Node *);
-void searchList(Node *, string);
-void sortList(Node *);
+//function prototypes for the linked list operations
+void insert(Node *&head, int key);
+void delete(Node *&head, int key);
+void search(Node *head, int key);
+void print(Node *head);
+void sort(Node *&head);
+void reverse(Node *&head);
+void rotate(Node *&head, int k);
+void iShift(Node *&head, int k);
+void clear(Node *&head);
+
+//function prototypes for the menu
 
 int main()
 {
@@ -28,3 +36,17 @@ int main()
     return 0;
 }
 
+/*
+----------------------
+Linked list operations
+----------------------
+*/
+void insert(Node *&head, int key)
+{
+    //create a new node
+    Node *newNode = new Node(key);
+
+    //insert the new node at the beginning of the list
+    newNode->next = head;
+    head = newNode;
+}
