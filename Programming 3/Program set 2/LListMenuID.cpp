@@ -14,18 +14,29 @@ struct Node
 };
 
 //function prototypes for the linked list operations
-void insert(Node *&head, int key);
-void remove(Node *&head, int key);
-void search(Node *head, int key);
-void print(Node *head);
-void sort(Node *&head);
-void reverse(Node *&head);
-void rotate(Node *&head, int k);
-void iShift(Node *&head, int k);
-void clear(Node *&head);
+bool insertKey(Node *&head, int key);
+bool deleteKey(Node *&head, int key);
+bool searchKey(Node *head, int key);
+void printList(Node *head);
+int listSize(Node *head);
+void sortList(Node *&head);
+void reverseList(Node *&head);
+void rotateList(Node *&head);
+void shiftList(Node *&head);
+void clearList(Node *&head);
 
 //function prototypes for the menu
-
+void menu();
+void menuInsert(Node *&head);
+void menuDelete(Node *&head);
+void menuSearch(Node *head);
+void menuPrint(Node *head);
+void menuSize(Node *head);
+void menuSort(Node *&head);
+void menuReverse(Node *&head);
+void menuRotate(Node *&head);
+void menuShift(Node *&head);
+void menuClear(Node *&head);
 
 int main()
 {
@@ -42,171 +53,231 @@ int main()
 Linked list operations
 ----------------------
 */
-void insert(Node *&head, int key)
+bool insertKey(Node *&head, int key)
 {
+    //create a new node
     Node *newNode = new Node(key);
 
+    //check if the list is empty
+    if (head == NULL)
+    {
+        head = newNode;
+        return true;
+    }
+
+    //check if the key is already in the list
+    if (searchKey(head, key))
+    {
+        return false;
+    }
+
+    //insert the key at the beginning of the list
     newNode->next = head;
     head = newNode;
+    return true;
 }
 
-void remove(Node *&head, int key)
+bool deleteKey(Node *&head, int key)
 {
-    Node *prev = NULL;
-    Node *curr = head;
-
-    while (curr != NULL)
+    //check if the list is empty
+    if (head == NULL)
     {
-        if (curr->key == key)
-        {
-            if (prev == NULL)
-            {
-                head = curr->next;
-            }
-            else
-            {
-                prev->next = curr->next;
-            }
-            delete curr;
-            return;
-        }
-        prev = curr;
-        curr = curr->next;
+        return false;
     }
-}
 
-void search(Node *head, int key)
-{
-    Node *curr = head;
-
-    while (curr != NULL)
+    //check if the key is in the list
+    if (!searchKey(head, key))
     {
-        if (curr->key == key)
-        {
-            cout << "Found " << key << endl;
-            return;
-        }
-        curr = curr->next;
+        return false;
     }
-    cout << "Not found " << key << endl;
+
+    //delete the key from the beginning of the list
+    if (head->key == key)
+    {
+        Node *temp = head;
+        head = head->next;
+        delete temp;
+        return true;
+    }
+
+    //delete the key from the middle of the list
+    Node *current = head;
+    while (current->next->key != key)
+    {
+        current = current->next;
+    }
+    Node *temp = current->next;
+    current->next = current->next->next;
+    delete temp;
+    return true;
 }
 
-void print(Node *head)
+bool searchKey(Node *head, int key)
 {
-    Node *curr = head;
-
-    while (curr != NULL)
+    //check if the list is empty
+    if (head == NULL)
     {
-        cout << curr->key << " ";
-        curr = curr->next;
+        return false;
+    }
+
+    //search for the key in the list
+    Node *current = head;
+    while (current != NULL)
+    {
+        if (current->key == key)
+        {
+            return true;
+        }
+        current = current->next;
+    }
+    return false;
+}
+
+void printList(Node *head)
+{
+    //check if the list is empty
+    if (head == NULL)
+    {
+        cout << "The list is empty." << endl;
+        return;
+    }
+
+    //print the list
+    Node *current = head;
+    while (current != NULL)
+    {
+        cout << current->key << " ";
+        current = current->next;
     }
     cout << endl;
 }
 
-void sort(Node *&head)
+int listSize(Node *head)
 {
-    Node *curr = head;
-    Node *next = NULL;
-    int temp;
+    //check if the list is empty
+    if (head == NULL)
+    {
+        return 0;
+    }
 
+    //count the number of nodes in the list
+    int count = 0;
+    Node *current = head;
+    while (current != NULL)
+    {
+        count++;
+        current = current->next;
+    }
+    return count;
+}
+
+void sortList(Node *&head)
+{
+    //check if the list is empty
     if (head == NULL)
     {
         return;
     }
-    else
-    {
-        while (curr != NULL)
-        {
-            next = curr->next;
 
-            while (next != NULL)
-            {
-                if (curr->key > next->key)
-                {
-                    temp = curr->key;
-                    curr->key = next->key;
-                    next->key = temp;
-                }
-                next = next->next;
-            }
-            curr = curr->next;
-        }
+    //sort the list
+    int size = listSize(head);
+    int *arr = new int[size];
+    Node *current = head;
+    for (int i = 0; i < size; i++)
+    {
+        arr[i] = current->key;
+        current = current->next;
     }
+    sort(arr, arr + size);
+    clearList(head);
+    for (int i = 0; i < size; i++)
+    {
+        insertKey(head, arr[i]);
+    }
+    delete[] arr;
 }
 
-void reverse(Node *&head)
+void reverseList(Node *&head)
 {
-    Node *prev = NULL;
-    Node *curr = head;
-    Node *next = NULL;
-
-    while (curr != NULL)
+    //check if the list is empty
+    if (head == NULL)
     {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
+        return;
+    }
+
+    //reverse the list
+    Node *current = head;
+    Node *prev = NULL;
+    Node *next = NULL;
+    while (current != NULL)
+    {
+        next = current->next;
+        current->next = prev;
+        prev = current;
+        current = next;
     }
     head = prev;
 }
 
-void rotate(Node *&head, int k)
+void rotateList(Node *&head)
 {
-    Node *curr = head;
-    Node *prev = NULL;
-    Node *next = NULL;
-    int count = 0;
+    //check if the list is empty
+    if (head == NULL)
+    {
+        return;
+    }
 
-    while (curr != NULL && count < k)
+    //rotate the list
+    Node *current = head;
+    while (current->next != NULL)
     {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
-        count++;
+        current = current->next;
     }
-    head = prev;
-    while (curr != NULL)
-    {
-        curr = curr->next;
-    }
-    curr->next = next;
+    current->next = head;
+    head = head->next;
+    current->next->next = NULL;
 }
 
-void iShift(Node *&head, int k)
+void shiftList(Node *&head)
 {
-    Node *curr = head;
-    Node *prev = NULL;
-    Node *next = NULL;
-    int count = 0;
+    //check if the list is empty
+    if (head == NULL)
+    {
+        return;
+    }
 
-    while (curr != NULL && count < k)
+    //shift the list
+    Node *current = head;
+    while (current->next->next != NULL)
     {
-        next = curr->next;
-        curr->next = prev;
-        prev = curr;
-        curr = next;
-        count++;
+        current = current->next;
     }
-    head = prev;
-    while (curr != NULL)
-    {
-        curr = curr->next;
-    }
-    curr->next = next;
+    current->next->next = head;
+    head = current->next;
+    current->next = NULL;
 }
 
-void clear(Node *&head)
+void clearList(Node *&head)
 {
-    Node *curr = head;
-    Node *next = NULL;
-
-    while (curr != NULL)
+    //check if the list is empty
+    if (head == NULL)
     {
-        next = curr->next;
-        delete curr;
-        curr = next;
+        return;
+    }
+
+    //clear the list
+    Node *current = head;
+    while (current != NULL)
+    {
+        Node *temp = current;
+        current = current->next;
+        delete temp;
     }
     head = NULL;
 }
 
+/*
+----------------------
+Menu operations
+----------------------
+*/
