@@ -40,10 +40,67 @@ void menuClear(Node *&head);
 
 int main()
 {
-    //declare variables
-    Node *head = NULL;
-    string name;
+    Node *head = nullptr;
     int choice;
+
+    while (true)
+    {
+        menu();
+        cin >> choice;
+
+        // Ensure valid input
+        while (cin.fail() || choice < 1 || choice > 11)
+        {
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cout << "Invalid choice. Please try again: ";
+            cin >> choice;
+        }
+
+        if (choice == 11)
+        {
+            break; // Quit the program
+        }
+
+        switch (choice)
+        {
+        case 1:
+            menuInsert(head);
+            break;
+        case 2:
+            menuDelete(head);
+            break;
+        case 3:
+            menuSearch(head);
+            break;
+        case 4:
+            menuPrint(head);
+            break;
+        case 5:
+            menuSize(head);
+            break;
+        case 6:
+            menuSort(head);
+            break;
+        case 7:
+            menuReverse(head);
+            break;
+        case 8:
+            menuRotate(head);
+            break;
+        case 9:
+            menuShift(head);
+            break;
+        case 10:
+            menuClear(head);
+            break;
+        }
+
+        cout << endl; // Add a newline for better readability
+    }
+
+    // Clear the list before exiting
+    clearList(head);
 
     return 0;
 }
@@ -135,18 +192,38 @@ bool searchKey(Node *head, int key)
 
 void printList(Node *head)
 {
-    //check if the list is empty
-    if (head == NULL)
+    // Check if the list is empty
+    if (head == nullptr)
     {
-        cout << "The list is empty." << endl;
+        cout << "Nothing to print" << endl;
         return;
     }
 
-    //print the list
+    // Print the keys and pointers in the list
     Node *current = head;
-    while (current != NULL)
+    while (current != nullptr)
     {
-        cout << current->key << " ";
+        cout << "-----------    ";
+        current = current->next;
+    }
+    cout << endl;
+
+    current = head;
+    while (current != nullptr)
+    {
+        cout << "| " << current->key << " |";
+        if (current->next != nullptr)
+            cout << "---->";
+        else
+            cout << "  |";
+        current = current->next;
+    }
+    cout << endl;
+
+    current = head;
+    while (current != nullptr)
+    {
+        cout << "-----------    ";
         current = current->next;
     }
     cout << endl;
@@ -275,9 +352,3 @@ void clearList(Node *&head)
     }
     head = NULL;
 }
-
-/*
-----------------------
-Menu operations
-----------------------
-*/
