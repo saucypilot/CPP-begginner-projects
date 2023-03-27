@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <algorithm>
+#include <limits>
 
 using namespace std;
 
@@ -351,4 +352,99 @@ void clearList(Node *&head)
         delete temp;
     }
     head = NULL;
+}
+
+/*
+----------------------
+Menu functions
+----------------------
+*/
+void menuInsert(Node *&head)
+{
+    int key;
+    cout << "Enter the key to insert: ";
+    cin >> key;
+    if (insertKey(head, key))
+    {
+        cout << "Key inserted successfully" << endl;
+    }
+    else
+    {
+        cout << "Key already exists" << endl;
+    }
+}
+
+void menuDelete(Node *&head)
+{
+    int key;
+    cout << "Enter the key to delete: ";
+    cin >> key;
+    if (deleteKey(head, key))
+    {
+        cout << "Key deleted successfully" << endl;
+    }
+    else
+    {
+        cout << "Key not found" << endl;
+    }
+}
+
+void menuSearch(Node *head)
+{
+    int key;
+    cout << "Enter the key to search: ";
+    cin >> key;
+    if (searchKey(head, key))
+    {
+        cout << "Key found" << endl;
+    }
+    else
+    {
+        cout << "Key not found" << endl;
+    }
+}
+
+void menuPrint(Node *head)
+{
+    printList(head);
+}
+
+void menuSize(Node *head)
+{
+    cout << "The size of the list is " << listSize(head) << endl;
+}
+
+void menuSort(Node *&head)
+{
+    sortList(head);
+    cout << "The list is sorted" << endl;
+}
+
+void menuReverse(Node *&head)
+{
+    reverseList(head);
+    cout << "The list is reversed" << endl;
+}
+
+void menuRotate(Node *&head)
+{
+    rotateList(head);
+    cout << "The list is rotated" << endl;
+}
+
+void menuShift(Node *&head)
+{
+    shiftList(head);
+    cout << "The list is shifted" << endl;
+}
+
+void menuClear(Node *&head)
+{
+    clearList(head);
+    cout << "The list is cleared" << endl;
+}
+
+void menuExit()
+{
+    cout << "Goodbye" << endl;
 }
