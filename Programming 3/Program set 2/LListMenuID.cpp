@@ -2,6 +2,7 @@
 #include <string>
 #include <algorithm>
 #include <limits>
+#include <iomanip>
 
 using namespace std;
 
@@ -49,14 +50,15 @@ int main()
         std::cout << "4. Print the list" << std::endl;
         std::cout << "5. List size" << std::endl;
         std::cout << "6. Sort the list" << std::endl;
-        std::cout << "7. Reverse the list" << std::endl;
+        std::cout << "7. Reverse the lis" << std::endl;
         std::cout << "8. Rotate the list" << std::endl;
         std::cout << "9. Shift the list" << std::endl;
         std::cout << "10. Clear the list" << std::endl;
-        std::cout << "11. Exit" << std::endl;
+        std::cout << "11. Exit" << std::endl << std::endl;
 
         std::cout << "Enter your choice: ";
         std::cin >> choice;
+        std::cout << std::endl;
 
         switch (choice)
         {
@@ -229,38 +231,29 @@ bool searchKey(Node *head, int key)
 
 void printList(Node *head)
 {
-    // Check if the list is empty
-    if (head == nullptr)
-    {
-        cout << "Nothing to print" << endl;
-        return;
-    }
-
-    // Print the keys and pointers in the list
     Node *current = head;
-    while (current != nullptr)
+    cout << "Printing the list:" << endl;
+    while (current != NULL)
     {
-        cout << "-----------    ";
+        cout << "----------     ";
         current = current->next;
     }
     cout << endl;
-
     current = head;
-    while (current != nullptr)
+    while (current != NULL)
     {
-        cout << "| " << current->key << " |";
-        if (current->next != nullptr)
-            cout << "---->";
-        else
-            cout << "  |";
+        cout << "| " << setw(2) << current->key << " |";
         current = current->next;
+        if (current != NULL)
+        {
+            cout << "--->";
+        }
     }
-    cout << endl;
-
+    cout << "  " << endl;
     current = head;
-    while (current != nullptr)
+    while (current != NULL)
     {
-        cout << "-----------    ";
+        cout << "----------     ";
         current = current->next;
     }
     cout << endl;
