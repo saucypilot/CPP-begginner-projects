@@ -15,17 +15,17 @@ int col[] = {-1, 1, 0, -1, -1, 1, 0, 1};
 // is not valid matrix coordinates or (x, y) represents water or
 // position (x, y) is already processed
 
-bool isSafe(vector<vector<int>> const &mat, int x, int y,
-            vector<vector<bool>> const &processed)
+bool isSafe(vector<vector<int> > const &mat, int x, int y,
+            vector<vector<bool> > const &processed)
 {
     return (x >= 0 && x < mat.size()) && (y >= 0 && y < mat[0].size()) &&
            mat[x][y] && !processed[x][y];
 }
 
-void BFS(vector<vector<int>> const &mat, vector<vector<bool>> &processed, int i, int j)
+void BFS(vector<vector<int> > const &mat, vector<vector<bool> > &processed, int i, int j)
 {
     // create an empty queue and enqueue source node
-    queue<pair<int, int>> q;
+    queue<pair<int, int> > q;
     q.push(make_pair(i, j));
 
     // mark source node as processed
@@ -55,7 +55,7 @@ void BFS(vector<vector<int>> const &mat, vector<vector<bool>> &processed, int i,
     }
 }
 
-int countBlobs(vector<vector<int>> const &mat)
+int countBlobs(vector<vector<int> > const &mat)
 {
     // base case
     if (mat.size() == 0)
@@ -67,7 +67,7 @@ int countBlobs(vector<vector<int>> const &mat)
     int N = mat.size();
 
     // stores if a cell is processed or not
-    vector<vector<bool>> processed(N, vector<bool>(N));
+    vector<vector<bool> > processed(N, vector<bool>(N));
 
     int blobs = 0;
     for (int i = 0; i < N; i++)
@@ -103,7 +103,7 @@ int main()
     // Read in the grid
     int N;
     fin >> N;
-    vector<vector<int>> mat(N, vector<int>(N));
+    vector<vector<int> > mat(N, vector<int>(N));
     for (int i = 0; i < N; i++)
     {
         for (int j = 0; j < N; j++)
