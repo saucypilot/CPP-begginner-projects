@@ -1,133 +1,138 @@
 #include <iostream>
 #include <vector>
-#include <iomanip> // for std::setw()
-#include <queue>   // for std::queue
-#include <string>  // for std::string
-#include <limits>  // for std::numeric_limits
+#include <iomanip>
+#include <algorithm>
+#include <memory>
+#include <string>
+#include <limits>
+#include <sstream>
 
-using namespace std;
-
-struct TreeNode
+// Node class for binary search tree
+class Node
 {
-    int val;
-    TreeNode *left;
-    TreeNode *right;
-    TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
+public:
+    int data;
+    std::shared_ptr<Node> left, right;
+
+    // Constructor to initialize data and pointers
+    Node(int data) : data(data), left(nullptr), right(nullptr) {}
 };
 
-// Inserts a node with the given value into the BST rooted at root.
-void insertNode(TreeNode *&root, int val)
+// Binary search tree class
+class BST
+{
+public:
+    std::shared_ptr<Node> root;
+
+    // Insert a new node into the binary search tree
+    void insert(int data)
+    {
+        if (!root)
+        {
+            root = std::make_shared<Node>(data);
+            return;
+        }
+
+        std::shared_ptr<Node> curr = root, prev;
+        while (curr)
+        {
+            prev = curr;
+            if (data <= curr->data)
+            {
+                curr = curr->left;
+            }
+            else
+            {
+                curr = curr->right;
+            }
+        }
+
+        if (data <= prev->data)
+        {
+            prev->left = std::make_shared<Node>(data);
+        }
+        else
+        {
+            prev->right = std::make_shared<Node>(data);
+        }
+    }
+};
+
+// Get height of the binary search tree
+int getHeight(std::shared_ptr<Node> root)
 {
     if (!root)
-    { // If root is null, create a new node with val.
-        root = new TreeNode(val);
+    {
+        return 0;
+    }
+    return 1 + std::max(getHeight(root->left), getHeight(root->right));
+}
+
+// Print a level of the binary search tree
+void printLevel(std::shared_ptr<Node> root, int level, int indent)
+{
+    if (!root)
+    {
         return;
     }
-    // Otherwise, recurse down the left or right subtree based on the value of val.
-    if (val <= root->val)
+
+    if (level == 1)
     {
-        insertNode(root->left, val);
+        std::cout << std::setw(indent) << root->data;
     }
     else
     {
-        insertNode(root->right, val);
+        printLevel(root->left, level - 1, indent / 2);
+        printLevel(root->right, level - 1, indent / 2);
     }
+    std::cout << std::setw(indent) << ' ';
 }
 
-// Generates a 2D vector of strings representing the binary search tree rooted at root.
-vector<vector<string>> generateTree(TreeNode *root)
+// Print the binary search tree
+void printTree(std::shared_ptr<Node> root, int height)
 {
-    if (!root)
+    for (int i = 1; i <= height; ++i)
     {
-        return {};
-    }
-
-    // Get the left and right subtrees of the root node.
-    vector<vector<string>> leftTree = generateTree(root->left);
-    vector<vector<string>> rightTree = generateTree(root->right);
-
-    // Get the maximum height of the left and right subtrees.
-    int leftHeight = leftTree.size();
-    int rightHeight = rightTree.size();
-    int maxHeight = max(leftHeight, rightHeight);
-
-    // Add padding to the left and right subtrees so that they have the same height.
-    if (leftHeight < maxHeight)
-    {
-        int numCols = leftTree[0].size();
-        for (int i = 0; i < maxHeight - leftHeight; i++)
+        printLevel(root, i, 1 << (height - i));
+        std::cout << '\n';
+        if (i % 2 == 0)
         {
-            leftTree.push_back(vector<string>(numCols, "    "));
+            for (int j = 1; j <= (1 << (height - i)) / 2; ++j)
+            {
+                std::cout << " / \\";
+            }
+            std::cout << '\n';
         }
-    }
-    if (rightHeight < maxHeight)
-    {
-        int numCols = rightTree[0].size();
-        for (int i = 0; i < maxHeight - rightHeight; i++)
-        {
-            rightTree.push_back(vector<string>(numCols, "    "));
-        }
-    }
-
-    // Add the root node to the middle of the 2D vector representation of the tree.
-    int numCols = leftTree[0].size() + rightTree[0].size() + 1;
-    vector<string> row(numCols, "    ");
-    row[leftTree[0].size()] = to_string(root->val);
-    vector<vector<string>> result = {row};
-
-    // Merge the left and right subtrees together.
-    for (int i = 0; i < maxHeight; i++)
-    {
-        vector<string> newRow = leftTree[i];
-        newRow.insert(newRow.end(), {"    "});
-        newRow.insert(newRow.end(), rightTree[i].begin(), rightTree[i].end());
-        result.push_back(newRow);
-    }
-
-    return result;
-}
-
-// Generates and prints the binary search tree in a vertical tree-like form.
-void printTree(TreeNode *root)
-{
-    if (!root)
-    {
-        return;
-    }
-
-    // Generate the 2D vector representation of the tree.
-    vector<vector<string>> tree = generateTree(root);
-
-    // Print the tree vertically.
-    for (const auto &row : tree)
-    {
-        for (const auto &col : row)
-        {
-            cout << col;
-        }
-        cout << endl;
     }
 }
 
-
+// Main function
 int main()
 {
-    char runAgain = 'Y';
-    while (runAgain == 'Y' || runAgain == 'y')
+    char runAgain;
+    do
     {
-        TreeNode *root = nullptr;
-        cout << "Enter up to 20 integers: ";
-        for (int i = 0, num; i < 20 && cin >> num; ++i)
+        BST tree;               // Create a binary search tree
+        std::vector<int> input; // Create a vector to store user input
+        int num;
+        std::string line;
+
+        std::cout << "Enter up to 20 integers: ";
+        std::getline(std::cin, line); // Get a line of user input
+        std::istringstream iss(line);
+
+        int count = 0;
+        while (count < 20 && iss >> num) // Read integers from the user input
         {
-            insertNode(root, num); // Insert each input integer into the BST.
+            input.push_back(num);
+            tree.insert(num); // Insert each integer into the binary search tree
+            count++;
         }
 
-        printTree(root); // Generate and print the tree representation.
-
-        cout << "Run Again (Y/N): ";
-        cin >> runAgain;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
-
-    return 0;
+        int height = getHeight(tree.root); // Get the height of the binary search tree
+        printTree(tree.root, height);      // Print the binary search tree
+        std::cout << "\nRun Again (Y/N): "; // Ask user if they want to run the program again
+        std::cin >> runAgain;              // Get user input
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clear the input buffer
+    } while (std::tolower(runAgain) == 'y'); // Run the program again if the user enters 'y'
 }
