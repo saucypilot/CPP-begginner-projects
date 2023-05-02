@@ -71,7 +71,7 @@ int getHeight(std::shared_ptr<Node> root)
 // Print a level of the binary search tree
 void printLevel(std::shared_ptr<Node> root, int level, int indent)
 {
-    if (!root)
+    if (!root || level < 1)
     {
         return;
     }
@@ -83,6 +83,7 @@ void printLevel(std::shared_ptr<Node> root, int level, int indent)
     else
     {
         printLevel(root->left, level - 1, indent / 2);
+        std::cout << std::setw(indent) << ' ';
         printLevel(root->right, level - 1, indent / 2);
     }
     std::cout << std::setw(indent) << ' ';

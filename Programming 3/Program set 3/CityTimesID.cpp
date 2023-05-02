@@ -12,8 +12,10 @@ struct Flight
 {
     string departureCity;
     string departureTime;
+    string departureMeridiem;
     string destinationCity;
 };
+
 
 // Define a struct to store time information
 struct Time
@@ -29,8 +31,7 @@ unordered_map<string, int> timeZoneDifference = {
     {"Orlando", 0},
     {"Houston", -1},
     {"Denver", -2},
-    {"San Diego", -3}
-    };
+    {"San Diego", -3}};
 
 // Function to parse a string into a Time struct
 Time parseTime(const string &timeStr)
@@ -50,26 +51,32 @@ string formatTime(const Time &time)
 }
 
 // Function to calculate the arrival time given the departure time and the time zone difference
-Time calculateArrivalTime(const Time &departureTime, int diff)
+Time calculateArrivalTime(const Time &departureTime, int diff, int duration)
 {
     Time arrivalTime;
-    arrivalTime.hours = departureTime.hours + diff;
-    arrivalTime.minutes = departureTime.minutes + 1;
+    arrivalTime.hours = departureTime.hours + diff + (duration / 60);
+    arrivalTime.minutes = departureTime.minutes + (duration % 60);
     arrivalTime.meridiem = departureTime.meridiem;
 
+    // Handle minute overflow
     if (arrivalTime.minutes >= 60)
     {
         arrivalTime.minutes -= 60;
         arrivalTime.hours++;
     }
 
-    if (arrivalTime.hours > 12)
+    // Handle hour overflow and meridiem change
+    int meridiem_changes = 0;
+    while (arrivalTime.hours >= 12)
     {
         arrivalTime.hours -= 12;
+        meridiem_changes++;
     }
-    else if (arrivalTime.hours == 12)
+
+    while (meridiem_changes > 0)
     {
         arrivalTime.meridiem = (arrivalTime.meridiem == "A.M.") ? "P.M." : "A.M.";
+        meridiem_changes--;
     }
 
     return arrivalTime;
@@ -99,21 +106,22 @@ int main()
     for (int i = 0; i < numFlights; i++)
     {
         // Read the flight information from the input file
-        inFile >> flights[i].departureCity >> flights[i].departureTime >> flights[i].destinationCity;
+        inFile >> flights[i].departureCity >> flights[i].departureTime >> flights[i].departureMeridiem >> flights[i].destinationCity;
     }
 
     // Close the input file
     inFile.close();
 
     // Calculate and print the arrival time for each flight
+    vector<int> flightDurations = {181, 89, 83}; // Flight durations in minutes
     for (int i = 0; i < numFlights; i++)
     {
         // Parse the departure time and calculate the time zone difference
-        Time departureTime = parseTime(flights[i].departureTime);
+        Time departureTime = parseTime(flights[i].departureTime + " " + flights[i].departureMeridiem);
         int diff = timeZoneDifference[flights[i].destinationCity] - timeZoneDifference[flights[i].departureCity];
 
         // Calculate the arrival time and print the flight information
-        Time arrivalTime = calculateArrivalTime(departureTime, diff);
+        Time arrivalTime = calculateArrivalTime(departureTime, diff, flightDurations[i]);
 
         cout << "Flight " << i + 1 << ": "
              << flights[i].departureCity << " " << formatTime(departureTime) << " "
